@@ -11,7 +11,7 @@
 
 const moment = require('moment-timezone')
 const {fetchJson,cmd, tlang } = require('../lib')
-let gis = require("g-i-s");
+let gis = require("async-g-i-s");
 const axios = require('axios')
 const fetch = require('node-fetch')
 
@@ -131,28 +131,29 @@ cmd({
         }
     )
     //---------------------------------------------------------------------------
-cmd({
-            pattern: "google",
-            category: "search",
-            desc: "Sends info of given query from Google Search.",
-            use: '<text>',
-            filename: __filename,
-        },
-        async(Void, citel, text) => {
-            if (!text) throw `Example : ${prefix}google Secktor Md`
-            let google = require('google-it')
-            google({ 'query': text }).then(res => {
-                let text = `Google Search From : ${text}\n\n`
-                for (let g of res) {
-                    text += `➣ *Title* : ${g.title}\n`
-                    text += `➣ *Description* : ${g.snippet}\n`
-                    text += `➣ *Link* : ${g.link}\n\n────────────────────────\n\n`
-                }
-                citel.reply(text)
-            })
-
-        }
-    )
+    cmd({
+        pattern: "google",
+        alias :['search','gsearch'],
+        category: "search",
+        desc: "Sends info of given query from Google Search.",
+        use: '<text>',
+        filename: __filename,
+    },
+    async(Void, citel, text) => {
+        if (!text) return citel.reply(`give me a query\n*Example : .google Who is Suhail Tech.*`);
+        let google = require('google-it');
+        google({ 'query': text}).then(res => {
+            let msg= `Google Search From : ${text} \n\n`;
+            for (let g of res) {
+                msg+= `➣ Title : ${g.title}\n`;
+                msg+= `➣ Description : ${g.snippet}\n`;
+                msg+= `➣ Link : ${g.link}\n\n────────────────────────\n\n`;
+            }
+         
+            return citel.reply(msg);
+        })
+    }
+)
     //---------------------------------------------------------------------------
 cmd({
             pattern: "image",
@@ -170,20 +171,18 @@ cmd({
             let nn = name2
             for (let i = 0; i < nn; i++) {
 
-                gis(name1, async(error, result) => {
-                    n = result;
-                    images = n[Math.floor(Math.random() * n.length)].url;
+                let n = await gis(name1)
+                images = n[Math.floor(Math.random() * n.length)].url;
                     let buttonMessage = {
                         image: {
                             url: images,
                         },
-                        caption: ` `,
+                        caption: `_Sector Image Search_\n*${name1}*`,
                         headerType: 4,
                     };
                     Void.sendMessage(citel.chat, buttonMessage, {
                         quoted: citel,
                     });
-                })
             }
         }
     )

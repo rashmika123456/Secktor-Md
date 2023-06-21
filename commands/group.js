@@ -245,16 +245,17 @@ cmd({
     )
     //---------------------------------------------------------------------------
 cmd({
-            pattern: "resetwarn",
-            desc: "Deletes all previously given warns to quoted user.",
+            pattern: "rwarn",
+            desc: "Deletes all previously given warns of quoted user.",
             category: "group",
-           filename: __filename,
+            filename: __filename,
             use: '<quote|reply|number>',
         },
-        async(Void, citel, text) => {
+        async(Void, citel, text,{isCreator}) => {
             if (!isCreator) return citel.reply(tlang().owner)
+            if (!citel.quoted) return citel.reply('Quote a user master.')
             await warndb.deleteOne({ id: citel.quoted.sender.split('@')[0] + 'warn' });
-            citel.reply('User is free as a bird.\nAll previously given warn has been deleted.')
+            return citel.reply('User is now free as a bird.\n.')
         }
     )
     //---------------------------------------------------------------------------
@@ -367,28 +368,12 @@ cmd({
 *📥 Total Messages* ${ttms}
 *Powered by ${tlang().title}*
 `;
-            const buttonsd = [{
-                    buttonId: `${prefix}rank`,
-                    buttonText: {
-                        displayText: "Rank",
-                    },
-                    type: 1,
-                },
-                {
-                    buttonId: `${prefix}help`,
-                    buttonText: {
-                        displayText: " Help",
-                    },
-                    type: 1,
-                },
-            ];
             let buttonMessage = {
                 image: {
                     url: pfp,
                 },
                 caption: profile,
                 footer: tlang().footer,
-                buttons: buttonsd,
                 headerType: 4,
             };
             Void.sendMessage(citel.chat, buttonMessage, {
@@ -619,9 +604,17 @@ cmd({
             if (!/image/.test(mime)) return citel.reply(`Reply to Photo With Caption *text*`)
             mee = await Void.downloadAndSaveMediaMessage(citel.quoted)
             mem = await TelegraPh(mee)
-            meme = `https://api.memegen.link/images/custom/-/${text}.png?background=${mem}`
-            memek = await Void.sendImageAsSticker(citel.chat, meme, citel, { packname: citel.pushName, author: 'Secktor' })
-            await fs.unlinkSync(memek)
+            meme = await getBuffer(`https://api.memegen.link/images/custom/-/${text}.png?background=${mem}`)
+            let buttonMessage = {
+                image: meme,
+                caption: "Here we go",
+                footer: tlang().footer,
+                headerType: 4,
+            };
+            Void.sendMessage(citel.chat, buttonMessage, {
+                quoted: citel,
+            });
+            await fs.unlinkSync(mee)
 
         }
     )
@@ -650,22 +643,8 @@ cmd({
                     .then((res) => reply(`Group Chat Unmuted :)`))
                     .catch((err) => console.log(err));
             } else {
-                let buttons = [{
-                        buttonId: `${prefix}group open`,
-                        buttonText: {
-                            displayText: "📍Unmute",
-                        },
-                        type: 1,
-                    },
-                    {
-                        buttonId: `${prefix}group close`,
-                        buttonText: {
-                            displayText: "📍Mute",
-                        },
-                        type: 1,
-                    },
-                ];
-                await Void.sendButtonText(citel.chat, buttons, `Group Mode`, Void.user.name, citel);
+
+                return citel.reply(`Group Mode:\n${prefix}group open- to open\n${prefix}group close- to close`);
             }
         }
     )
@@ -941,6 +920,7 @@ cmd({
 )
 
 //---------------------------------------------------------------------------
+if(Config.WORKTYPE!=='private'){
 cmd({ on: "text" }, async(Void, citel) => {
     const randomXp = 8;
     let usrname = citel.pushName
@@ -1023,3 +1003,4 @@ cmd({ on: "text" }, async(Void, citel) => {
     }
 
 })
+}

@@ -82,31 +82,11 @@ Secktor.cmd({
                 }
 
                 str += `\n╰━━━━━━━━━━━──⊷\n`
-                let generatebutton = [{
-                    buttonId: `${prefix}owner`,
-                    buttonText: {
-                        displayText: 'Owner'
-                    },
-                    type: 1
-                },{
-                    buttonId: `${prefix}ping`,
-                    buttonText: {
-                        displayText: 'SPEED'
-                    },
-                    type: 1
-                }, {
-                    buttonId: `${prefix}list`,
-                    buttonText: {
-                        displayText: 'List Menu'
-                    },
-                    type: 1
-                }]
                 let buttonMessaged = {
                     image: { url: await botpic() },
                     caption: str,
                     footer: tlang().title,
-                    headerType: 4,
-                    buttons: generatebutton
+                    headerType: 4
                 };
                 return await Void.sendMessage(citel.chat, buttonMessaged);
             }
@@ -135,21 +115,19 @@ Secktor.cmd({
 ┃ ⛥│  
 ┃ ⛥╰───────────
 ╰━━━━━━━━━━━──⊷\n` + '```'
-            str += `╭━━━━━━━━━━━────⊷\n`
-            str += `┃ ⛥ ╭─────────────\n`
-            for (let i = 0; i < commands.length; i++) {
-             if(commands[i].pattern==undefined) continue
-                str += `┃ ⛥ │ ➛ ${i+1}. ` + commands[i].pattern + '\n'
-            }
-            str += `┃ ⛥ ╰─────────────\n`
-            str += `╰━━━━━━━━━━━───⊷\n`
+for (let i = 0; i < commands.length; i++) 
+{
+     if(commands[i].pattern==undefined) continue
+     str +=       `╭ ${i+1} *${fancytext(commands[i].pattern,1)}*\n` 
+     str += `╰➛ ${fancytext(commands[i].desc,1)}\n`
+}
             return Void.sendMessage(citel.chat, { image: { url: THUMB_IMAGE }, caption: str })
         }
     )
     //---------------------------------------------------------------------------
 Secktor.cmd({
         pattern: "owner",
-        desc: "To check ping",
+        desc: "To find owner number",
         category: "general",
         react: "💜",
         filename: __filename
@@ -199,7 +177,7 @@ async(Void, citel, text) => {
         else arr.push(`*🍁Command:* ${cmd.pattern}`);
         if (cmd.category) arr.push(`*🧩Type:* ${cmd.category}`);
         if(cmd.filename) arr.push(`✨FileName: ${cmd.filename}`)
-        return await citel.reply(arr.join('\n'));
+        return citel.reply(arr.join('\n'));
 
 
 })
