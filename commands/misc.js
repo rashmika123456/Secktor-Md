@@ -9,7 +9,7 @@
  * @version 0.0.6
  **/
 
- const { tlang, getAdmin, prefix, Config, sck, fetchJson, runtime,cmd } = require('../lib')
+ const { tlang, getAdmin, prefix, Config, sck, fetchJson, runtime,cmd,getBuffer } = require('../lib')
  let { dBinary, eBinary } = require("../lib/binary");
 const { Sticker, createSticker, StickerTypes } = require("wa-sticker-formatter");
  const fs = require('fs')
@@ -59,14 +59,19 @@ async(Void, citel, text,{ isCreator }) => {
              filename: __filename,
          },
          async(Void, citel, text) => {
-             Void.sendMessage(citel.chat, {
-                 sticker: {
-                     url: `https://api.xteam.xyz/attp?file&text=${encodeURI(text)}`
-                 }
-             }, {
-                 quoted: citel
-             })
- 
+let a = await getBuffer(`https://citel-x.herokuapp.com/attp/${text}`)
+ return citel.reply(a,{packname:'Secktor',author:'ATTP'},"sticker") 
+         }
+     )
+ cmd({
+             pattern: "ttp",
+             desc: "Makes static sticker of text.",
+             category: "sticker",
+             filename: __filename,
+         },
+         async(Void, citel, text) => {
+let a = await getBuffer(`https://citel-x.herokuapp.com/ttp/${text}`)
+ return citel.reply(a,{packname:'Secktor',author:'TTP'},"sticker") 
          }
      )
      //---------------------------------------------------------------------------
@@ -91,7 +96,7 @@ async(Void, citel, text,{ isCreator }) => {
                      method: "POST",
                      json: code
                  }, function(_error, _response, body) {
-                     citel.reply("> " + text[1] + "\n\n" + "```" + body.output + "```");
+                    return citel.reply("> " + text[1] + "\n\n" + "```" + body.output + "```");
                  });
              } catch (error) {
                  console.log(error);
@@ -106,7 +111,7 @@ async(Void, citel, text,{ isCreator }) => {
              filename: __filename,
          },
          async(Void, citel, text) => {
-             await citel.reply(text.replace(/\+/g, (String.fromCharCode(8206)).repeat(4001)))
+            return await citel.reply(text.replace(/\+/g, (String.fromCharCode(8206)).repeat(4001)))
  
          }
      )
@@ -155,19 +160,19 @@ async(Void, citel, text,{ isCreator }) => {
          },
          async(Void, citel, text) => {
              const upt = runtime(process.uptime())
-             citel.reply(`Uptime of ${tlang().title}: ${upt}`)
+             return citel.reply(`Uptime of ${tlang().title}: ${upt}`)
          }
      )
      //---------------------------------------------------------------------------
  cmd({
              pattern: "wm",
-             desc: "Makes wa me of quoted or mentioned user.",
+             desc: "Makes wa.me of quoted or mentioned user.",
              category: "misc",
              filename: __filename,
          },
          async(Void, citel, text) => {
              let users = citel.mentionedJid ? citel.mentionedJid[0].split('@')[0] : citel.quoted ? citel.quoted.sender.split('@')[0] : text.replace('@')[0]
-             citel.reply(`https://wa.me/${users}`)
+            return citel.reply(`https://wa.me/${users}`)
  
          }
      )

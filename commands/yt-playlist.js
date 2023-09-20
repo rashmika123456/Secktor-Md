@@ -63,11 +63,11 @@ yts( opts, async function ( err, playlist ) {
                             externalAdReply: {
                                 title: titleYt,
                                 body: citel.pushName,
-                                thumbnail: await getBuffer(search.all[0].thumbnail),
+                                thumbnail: log0,
                                 renderLargerThumbnail: true,
                                 mediaType: 2,
-                                mediaUrl: search.all[0].thumbnail,
-                                sourceUrl: search.all[0].thumbnail
+                                mediaUrl: 'https://github.com/SamPandey001/Secktor-Md',
+                                sourceUrl: 'https://github.com/SamPandey001/Secktor-Md'
                             }
                         }
                     }
